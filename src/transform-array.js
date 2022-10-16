@@ -14,62 +14,37 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 function transform(arr) {
-  let check = 0;
-  let copyArr = arr;
-  let copyArrResult = arr;
-  if(Array.isArray(arr)) {
-    
-  for(let i = 0; i < copyArr.length; i++) {
-      if(copyArr[i - check] === '--double-next') {
-          if(check > 0) {
-              copyArrResult.splice(i - check, 1);
-          } else {
-              if(i != copyArr.length - 1) {
-                  copyArrResult[i] = copyArr[i + 1];
-              } 
-              else copyArrResult.pop();   
-          }
+  let result = [];
+  if(Array.isArray(arr)) { 
+    for(let i = 0; i < arr.length; i++) {
+      if(arr[i] === '--double-next') {
+        if(arr[i + 1]) {
+          result.push(arr[i + 1]); 
+        }
+        continue;
       }
-      if(copyArr[i - check] === '--double-prev') {
-          if(check > 0) {
-              copyArrResult.splice(i - check, 1);
-              check = 1;
-          } else {
-              if(i > 0) {
-                  console.log(i)
-                  copyArrResult[i] = copyArr[i - 1];
-              }
-              else copyArrResult.shift();   
-          }
-          
+      if(arr[i] === '--double-prev') {
+        if(arr[i - 1]){
+          result.push(result[i-1]);
+        }
+        continue;   
       }
-      if(copyArr[i - check] === '--discard-next') {
-          if(check > 0){
-              copyArrResult.splice(i - check, 1);
-          } else {
-              if(i != copyArr.length - 1) {
-                  copyArrResult.splice(i, 2);
-                  check = 2;
-              }
-              else copyArrResult.pop();   
-          }    
+      if(arr[i] === '--discard-next'){
+        if(arr[i + 2]=='--double-prev'){
+            i = i + 2;
+        }
+        continue;
       }
-      if(copyArr[i - check] === '--discard-prev') {
-          if(check > 0){
-              copyArrResult.splice(i - check, 1);
-          } else {
-              if(i > 0) {
-                  copyArrResult.splice(i - 1, 2);
-                  check = 2;
-              } 
-              else copyArrResult.shift();   
-          }    
-      } 
+      if(arr[i] === '--discard-prev'){
+        result.pop();
+        continue;
+      }   
+      result.push(arr[i]) 
+    }
+    return result;
+  } else {
+    throw new Error("'arr' parameter must be an instance of the Array!");
   }
-  return copyArrResult;
-} else {
-  throw new Error("'arr' parameter must be an instance of the Array!");
-}
 }
 
 module.exports = {
